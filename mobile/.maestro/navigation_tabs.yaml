@@ -1,0 +1,27 @@
+appId: host.exp.exponent
+---
+- launchApp
+- openLink: "exp://10.0.2.2:8081"
+
+# La sesión puede estar activa o no — el home de pasajero aparece directamente
+- assertVisible: "Viajes en tu zona"
+
+# Ir a Solicitudes → el título real es "Bandeja de Solicitudes"
+- tapOn: "Solicitudes"
+- assertVisible: "Bandeja de Solicitudes"
+
+# Ir a Pagos → el título real es "Gestión de Pagos"
+- tapOn: "Pagos"
+- assertVisible: "Gestión de Pagos"
+
+# Ir a Reportar → el título real es "Reportar Conducta"
+- tapOn: "Reportar"
+- assertVisible: "Reportar Conducta"
+
+# Ir a Perfil
+- tapOn: "Perfil"
+- assertVisible: "Mis Datos"
+
+# Volver a Viajes
+- tapOn: "Viajes"
+- assertVisible: "Viajes en tu zona"

@@ -1,6 +1,5 @@
 # ===============================================
 # Proyecto U-Ride - Monorepo GitIgnore
-# Ignite / React Native / Node.js / React
 # ===============================================
 
 # 1. Dependencias globales
@@ -10,7 +9,7 @@ yarn-debug.log*
 yarn-error.log*
 pnpm-debug.log*
 
-# 2. Entorno y Seguridad (¡No cargar datos sensibles!)
+# 2. Variables de entorno — NUNCA subir al repo
 .env
 .env.local
 .env.development.local
@@ -19,14 +18,26 @@ pnpm-debug.log*
 backend/.env
 frontend/.env
 mobile/.env
-*.pem
+# Los .env.example SÍ se suben (son plantillas sin datos reales)
+!.env.example
+!backend/.env.example
+!frontend/.env.example
+!mobile/.env.example
 
-# 3. Compilados y Builds (Frontend / Web)
+# 3. Certificados y claves privadas
+*.pem
+*.key
+*.p12
+*.jks
+*.keystore
+*.mobileprovision
+
+# 4. Builds y compilados — Frontend / Web
 frontend/dist/
 frontend/build/
 .tsbuildinfo
 
-# 4. Compilados y Builds (React Native / Mobile)
+# 5. Builds y compilados — React Native / Mobile
 mobile/.expo/
 mobile/dist/
 mobile/web-build/
@@ -35,19 +46,14 @@ mobile/android/build/
 mobile/android/.gradle/
 mobile/ios/build/
 mobile/ios/Pods/
-*.jks
-*.keystore
-*.p12
-*.key
-*.mobileprovision
 
-# 5. Generados por el Backend (Node)
+# 6. Backend — archivos generados
 backend/logs/
 backend/coverage/
 backend/uploads/
 coverage/
 
-# 6. Herramientas del Sistema Operativo e IDEs
+# 7. IDEs y Sistema Operativo
 .DS_Store
 Thumbs.db
 .vscode/
@@ -58,11 +64,19 @@ Thumbs.db
 *.sln
 *.sw?
 
-# 7. Testing (Supertest / Jest local states)
+# 8. Testing
 .jest-test-results.json
 
-# 8. Documentación y LaTeX
+# 9. Documentación interna (no relevante para el repo)
 Latex/
 documentacion/
-TAREAS_URIDE.md/
+TAREAS_URIDE.md
 
+# 10. Herramientas de CI/CD locales
+.jenkins/
+
+# Screenshots y videos de Cypress (generados en ejecuci�n)
+frontend/cypress/screenshots/
+frontend/cypress/videos/
+frontend/.nyc_output/
+cypress.env.json

@@ -1,0 +1,14 @@
+appId: host.exp.exponent
+---
+- launchApp
+- openLink: "exp://10.0.2.2:8081"
+
+# La sesión puede estar activa. Navegar al Perfil para hacer logout.
+- assertVisible: "Viajes en tu zona"
+- tapOn: "Perfil"
+- assertVisible: "Cerrar Sesión"
+- tapOn: "Cerrar Sesión"
+
+# Confirmar que regresó al Login
+- assertVisible: "Bienvenido de vuelta"
+- assertVisible: "Iniciar Sesión"

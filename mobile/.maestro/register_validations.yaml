@@ -1,0 +1,55 @@
+appId: host.exp.exponent
+---
+- launchApp
+- openLink: "exp://10.0.2.2:8081"
+
+# Esperar que cargue la pantalla de login
+- assertVisible: "Bienvenido de vuelta"
+
+# Navegar a Registro
+- tapOn: "Regístrate"
+- assertVisible: "Crea tu cuenta"
+- assertVisible: "Solo para estudiantes verificados UTA"
+
+# Verificar que los campos están presentes
+- assertVisible: "Nombre completo"
+- assertVisible: "correo@uta.edu.ec"
+- assertVisible: "Contraseña"
+- assertVisible: "Confirmar Contraseña"
+
+# Probar validación: campos vacíos
+- tapOn: "Continuar"
+- assertVisible: "Campos vacíos"
+- tapOn: "OK"
+
+# Probar validación: dominio inválido
+- tapOn: "Nombre completo"
+- inputText: "Usuario Test"
+- tapOn: "correo@uta.edu.ec"
+- inputText: "invalido@gmail.com"
+- tapOn: "Contraseña"
+- inputText: "pass123"
+- tapOn: "Confirmar Contraseña"
+- inputText: "pass123"
+- tapOn: "Continuar"
+- assertVisible: "Dominio inválido"
+- tapOn: "OK"
+
+# Probar validación: contraseñas distintas
+- clearText
+- tapOn: "correo@uta.edu.ec"
+- clearText
+- inputText: "nuevo@uta.edu.ec"
+- tapOn: "Contraseña"
+- clearText
+- inputText: "pass123"
+- tapOn: "Confirmar Contraseña"
+- clearText
+- inputText: "otraclave"
+- tapOn: "Continuar"
+- assertVisible: "Contraseñas distintas"
+- tapOn: "OK"
+
+# Regresar al login
+- tapOn: "Inicia Sesión"
+- assertVisible: "Bienvenido de vuelta"

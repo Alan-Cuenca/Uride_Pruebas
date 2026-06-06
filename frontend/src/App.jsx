@@ -28,7 +28,7 @@ import {
 } from 'lucide-react';
 import './index.css';
 
-const api = axios.create({ baseURL: 'http://192.168.7.169:5000/api' });
+const api = axios.create({ baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api' });
 
 function TextField({ icon: Icon, label, value, onChange, placeholder, type = 'text', autoComplete, inputMode, required = true }) {
   return (
@@ -765,7 +765,7 @@ function App() {
                               {report.evidencia_url && (
                                 <div style={{ gridColumn: '1 / -1' }}>
                                   <p style={{ fontWeight: 700, fontSize: 12, color: 'var(--gray)', textTransform: 'uppercase', marginBottom: 8 }}>Evidencia Adjunta</p>
-                                  <a href={`http://192.168.7.169:5000${report.evidencia_url}`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'var(--primary)', color: '#fff', borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
+                                  <a href={`http://localhost:5000${report.evidencia_url}`} target="_blank" rel="noreferrer" style={{ display: 'inline-flex', alignItems: 'center', gap: 6, padding: '8px 14px', background: 'var(--primary)', color: '#fff', borderRadius: 8, fontSize: 13, fontWeight: 600, textDecoration: 'none' }}>
                                     Ver Evidencia
                                   </a>
                                 </div>

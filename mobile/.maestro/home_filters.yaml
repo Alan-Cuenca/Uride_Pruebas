@@ -1,0 +1,20 @@
+appId: host.exp.exponent
+---
+- launchApp
+- openLink: "exp://10.0.2.2:8081"
+
+# Esperar que cargue el home (puede que la sesión esté activa)
+- assertVisible: "Viajes en tu zona"
+
+# Abrir filtros usando el accessibilityLabel que agregamos
+- tapOn:
+    accessibilityLabel: "Abrir filtros"
+- assertVisible: "Filtrar Viajes"
+- assertVisible: "Distancia Máxima (km)"
+
+# Cambiar distancia a 5 km
+- tapOn: "5 km"
+- tapOn: "Aplicar Filtros"
+
+# Verificar que regresamos al listado
+- assertVisible: "Viajes en tu zona"

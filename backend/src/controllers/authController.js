@@ -148,16 +148,24 @@ exports.login = async (req, res) => {
     // 3. Generar JWT (Payload incluye id y rol)
     const payload = {
       id: usuario.id,
+      email: usuario.email,
       rol: usuario.rol
     };
 
     // Firmar Token usando variable .env (1 día expira loggeado)
-    const token = jwt.sign(payload, process.env.JWT_SECRET || 'llave_secreta_default', { expiresIn: '24h' });
+    const token = jwt.sign(payload, process.env.JWT_SECRET, { expiresIn: '24h' });
 
     // 4. Retorno Seguro
     return res.status(200).json({
       message: 'Inicio de Sesión Exitoso',
       token: token,
+      user: {
+        id: usuario.id,
+        nombre: usuario.nombre,
+        email: usuario.email,
+        rol: usuario.rol,
+        activo: usuario.activo
+      },
       usuario: {
         id: usuario.id,
         nombre: usuario.nombre,

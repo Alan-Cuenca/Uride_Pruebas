@@ -12,7 +12,9 @@ module.exports = (req, res, next) => {
 
   try {
     // 3. Desencriptar usando el secreto del entorno
-    const verifiedUser = jwt.verify(token, process.env.JWT_SECRET || 'llave_secreta_default');
+    const jwtSecret = process.env.JWT_SECRET;
+    if (!jwtSecret) throw new Error('JWT_SECRET no configurado en variables de entorno.');
+    const verifiedUser = jwt.verify(token, jwtSecret);
     
     // Inyectar el payload en request para que el controlador sepa quién lo llama
     req.user = verifiedUser;
@@ -20,6 +22,6 @@ module.exports = (req, res, next) => {
     // Dejar pasar al siguiente controlador
     next();
   } catch (error) {
-    res.status(400).json({ error: 'Token inválido o expirado. Inicia sesión nuevamente.' });
+    res.status(401).json({ error: 'Token inválido o expirado. Inicia sesión nuevamente.' });
   }
 };

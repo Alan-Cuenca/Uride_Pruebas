@@ -1,0 +1,31 @@
+# Dependencias (se instalan dentro del contenedor)
+node_modules
+
+# Logs
+npm-debug.log
+*.log
+
+# Variables de entorno (se pasan en el docker run, nunca se copian)
+.env
+.env.*
+
+# Carpeta de cobertura de tests
+coverage
+
+# Archivos de tests (no se necesitan en producción)
+tests/
+
+# Carpeta de uploads (se monta como volumen externo)
+uploads/
+
+# Archivos de desarrollo
+.git
+.gitignore
+README.md
+*.md
+dockerfile
+.dockerignore
+
+# Archivos del sistema operativo
+.DS_Store
+Thumbs.db

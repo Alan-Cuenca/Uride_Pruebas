@@ -1,0 +1,42 @@
+appId: host.exp.exponent
+---
+- launchApp
+- openLink: "exp://10.0.2.2:8081"
+
+# 1. Login con usuario activo
+- tapOn: "correo@uta.edu.ec"
+- inputText: "apuruncajas1832@uta.edu.ec"
+- tapOn: "Contraseña"
+- inputText: "Alan2005"
+- tapOn: "Iniciar Sesión"
+- assertVisible: "Viajes en tu zona"
+
+# 2. Navegar a Perfil
+- tapOn: "Perfil"
+- assertVisible: "Mis Datos"
+- assertVisible: "Carrera / Facultad"
+- assertVisible: "Teléfono (opcional)"
+- assertVisible: "Zona / Barrio de Referencia"
+- assertVisible: "Mi Rol"
+
+# 3. Editar la carrera
+- tapOn: "Ingeniería en Sistemas"
+- clearText
+- inputText: "Ingeniería en Sistemas Informáticos y Computación"
+
+# 4. Editar el teléfono
+- tapOn: "0999999999"
+- clearText
+- inputText: "0987654321"
+
+# 5. Guardar cambios
+- tapOn: "Guardar Cambios"
+- assertVisible: "Perfil actualizado"
+- tapOn: "OK"
+
+# 6. Verificar estadísticas visibles
+- assertVisible: "Reputación"
+- assertVisible: "Viajes"
+
+# 7. Verificar botón de cerrar sesión visible
+- assertVisible: "Cerrar Sesión"

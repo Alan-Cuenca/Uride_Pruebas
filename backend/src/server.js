@@ -17,10 +17,14 @@ app.use(express.json());
 app.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 // Inyectar Rutina Extra Sockets Tracker
-require('./sockets/trackerSocket')(io);
+if (process.env.NODE_ENV !== 'test') {
+  require('./sockets/trackerSocket')(io);
+}
 
 // Inyectar Motor de Cron Jobs
-require('./config/cronJobs')();
+if (process.env.NODE_ENV !== 'test') {
+  require('./config/cronJobs')();
+}
 
 // Rutas base
 app.get('/api/health', (req, res) => {

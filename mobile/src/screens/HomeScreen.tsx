@@ -206,7 +206,7 @@ export default function HomeScreen({ navigation }: any) {
         </View>
         <View style={{ flexDirection: 'row', gap: 10 }}>
           {user?.rol !== 'CONDUCTOR' && (
-            <TouchableOpacity style={styles.refreshBtn} onPress={() => setFilterModal(true)}>
+            <TouchableOpacity style={styles.refreshBtn} onPress={() => setFilterModal(true)} accessibilityLabel="Abrir filtros">
               <Ionicons name="filter-outline" size={22} color={COLORS.primary} />
             </TouchableOpacity>
           )}

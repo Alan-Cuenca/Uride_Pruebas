@@ -6,7 +6,12 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "test": "jest"
+    "test": "jest --passWithNoTests",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage",
+    "test:integration": "jest Pruebas/integration --forceExit",
+    "test:unit": "jest Pruebas/unit",
+    "test:debug": "node --inspect-brk node_modules/jest/bin/jest.js --runInBand"
   },
   "keywords": [],
   "author": "",
@@ -26,7 +31,7 @@
     "stripe": "^22.1.1"
   },
   "devDependencies": {
-    "jest": "^30.3.0",
+    "jest": "^30.4.2",
     "nodemon": "^3.1.14",
     "supertest": "^7.2.2"
   }

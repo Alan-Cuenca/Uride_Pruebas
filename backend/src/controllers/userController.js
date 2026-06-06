@@ -86,7 +86,11 @@ exports.getProfile = async (req, res) => {
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Usuario no encontrado.' });
     }
-    return res.status(200).json({ perfil: result.rows[0] });
+    const perfil = result.rows[0];
+    return res.status(200).json({
+      perfil,
+      user: perfil,
+    });
   } catch (error) {
     return res.status(500).json({ error: 'Error obteniendo perfil.' });
   }

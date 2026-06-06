@@ -32,4 +32,7 @@ router.put('/profile', authMiddleware, upload.single('foto'), userController.upd
 // [GET] /api/perfil -> Ver perfil propio
 router.get('/perfil', authMiddleware, userController.getProfile);
 
+// [GET] /api/users/me -> Compatibilidad con pruebas de integración
+router.get('/users/me', authMiddleware, userController.getProfile);
+
 module.exports = router;

@@ -1,0 +1,159 @@
+// ============================================================
+//  U-Ride Backend — Pipeline Declarativo de Jenkins
+//  Autor: DevOps U-Ride
+//  Descripción: Construye la imagen Docker del backend,
+//               ejecuta los tests y despliega el contenedor.
+// ============================================================
+
+pipeline {
+
+    // Ejecutar en cualquier agente disponible de Jenkins
+    agent any
+
+    // ── Variables globales del pipeline ──────────────────────
+    environment {
+        IMAGE_NAME    = 'uride-backend'        // Nombre de la imagen Docker
+        IMAGE_TAG     = 'latest'               // Etiqueta de la imagen
+        CONTAINER_NAME = 'uride-backend-prod'  // Nombre del contenedor en ejecución
+        APP_PORT      = '5000'                 // Puerto expuesto por el backend
+        // ID de las credenciales guardadas en Jenkins (DB password, JWT secret, etc.)
+        // Configura esto en: Jenkins > Manage Jenkins > Credentials
+        ENV_CREDENTIALS = 'uride-backend-env'
+    }
+
+    stages {
+
+        // ── ETAPA 1: Checkout ─────────────────────────────────
+        stage('Checkout') {
+            steps {
+                echo '📥 Clonando el repositorio desde Git...'
+                // Jenkins clona automáticamente el repo configurado en la tarea.
+                // El checkout SCM toma la configuración del Pipeline en la UI.
+                checkout scm
+            }
+        }
+
+        // ── ETAPA 2: Instalar dependencias y ejecutar tests ───
+        stage('Test') {
+            steps {
+                echo '🧪 Instalando dependencias y ejecutando tests de Jest...'
+                dir('backend') {
+                    // Instalar todas las deps (incluyendo devDeps para los tests)
+                    sh 'npm ci'
+                    // Ejecutar el conjunto completo de tests unitarios e integración
+                    sh 'npm test -- --passWithNoTests --forceExit'
+                }
+            }
+            post {
+                // Si los tests fallan, el pipeline se detiene aquí (no despliega)
+                failure {
+                    echo '❌ Los tests fallaron. Se cancela el despliegue.'
+                }
+                success {
+                    echo '✅ Todos los tests pasaron correctamente.'
+                }
+            }
+        }
+
+        // ── ETAPA 3: Construir imagen Docker ──────────────────
+        stage('Build Docker Image') {
+            steps {
+                echo "🐳 Construyendo la imagen Docker: ${IMAGE_NAME}:${IMAGE_TAG}..."
+                dir('backend') {
+                    // Construir la imagen usando el Dockerfile del backend
+                    // --no-cache asegura que siempre se use el código más reciente
+                    sh """
+                        docker build \
+                            --no-cache \
+                            -t ${IMAGE_NAME}:${IMAGE_TAG} \
+                            -f dockerfile \
+                            .
+                    """
+                }
+                echo "✅ Imagen ${IMAGE_NAME}:${IMAGE_TAG} construida exitosamente."
+            }
+        }
+
+        // ── ETAPA 4: Despliegue del contenedor ────────────────
+        stage('Deploy Container') {
+            steps {
+                echo "🚀 Desplegando el contenedor '${CONTAINER_NAME}'..."
+
+                // Paso 1: Detener y eliminar el contenedor anterior si existe
+                // El "|| true" evita que el pipeline falle si el contenedor no existe
+                sh """
+                    echo '🛑 Deteniendo el contenedor anterior (si existe)...'
+                    docker stop ${CONTAINER_NAME} || true
+                    docker rm   ${CONTAINER_NAME} || true
+                """
+
+                // Paso 2: Ejecutar el nuevo contenedor con las variables de entorno
+                // Las credenciales sensibles se leen desde Jenkins Credentials Store
+                withCredentials([file(credentialsId: "${ENV_CREDENTIALS}", variable: 'ENV_FILE')]) {
+                    sh """
+                        echo '▶️  Iniciando el nuevo contenedor...'
+                        docker run -d \
+                            --name ${CONTAINER_NAME} \
+                            --restart unless-stopped \
+                            -p ${APP_PORT}:${APP_PORT} \
+                            --env-file \$ENV_FILE \
+                            --network host \
+                            -v \$(pwd)/backend/uploads:/usr/src/app/uploads \
+                            ${IMAGE_NAME}:${IMAGE_TAG}
+                    """
+                }
+
+                echo "✅ Contenedor '${CONTAINER_NAME}' desplegado en el puerto ${APP_PORT}."
+            }
+        }
+
+        // ── ETAPA 5: Verificación de salud ────────────────────
+        stage('Health Check') {
+            steps {
+                echo '🏥 Verificando que el servicio responde...'
+                // Esperar 5 segundos para que el servidor arranque
+                sh 'sleep 5'
+                // Llamar al endpoint de salud del backend
+                sh """
+                    curl --fail --silent --max-time 10 \
+                        http://localhost:${APP_PORT}/api/health \
+                    && echo '✅ El backend responde correctamente.' \
+                    || echo '⚠️  El endpoint /api/health no respondió (revisa los logs).'
+                """
+            }
+        }
+
+        // ── ETAPA 6: Limpieza de imágenes antiguas ────────────
+        stage('Cleanup') {
+            steps {
+                echo '🧹 Eliminando imágenes Docker sin usar (dangling)...'
+                // Elimina imágenes "colgantes" (<none>) que acumula Docker
+                sh 'docker image prune -f'
+            }
+        }
+    }
+
+    // ── Acciones POST-pipeline (notificaciones) ───────────────
+    post {
+        success {
+            echo """
+            ╔══════════════════════════════════════╗
+            ║  ✅  PIPELINE EXITOSO                ║
+            ║  U-Ride Backend desplegado           ║
+            ║  http://localhost:${APP_PORT}/api/health ║
+            ╚══════════════════════════════════════╝
+            """
+        }
+        failure {
+            echo """
+            ╔══════════════════════════════════════╗
+            ║  ❌  PIPELINE FALLIDO                ║
+            ║  Revisa los logs en Jenkins          ║
+            ╚══════════════════════════════════════╝
+            """
+        }
+        always {
+            echo '📋 Pipeline finalizado. Revisa los logs para más detalles.'
+        }
+    }
+}

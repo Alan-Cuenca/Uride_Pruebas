@@ -4,7 +4,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 // IP WiFi de la PC donde corre el backend Node.js.
 // Android físico no puede usar 'localhost' — debe usar la IP de la red local.
 const api = axios.create({
-  baseURL: 'http://192.168.7.169:5000/api',
+  baseURL: 'http://10.0.2.2:5000/api',
   timeout: 10000,
 });
 

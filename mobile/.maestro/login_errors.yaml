@@ -1,0 +1,31 @@
+appId: host.exp.exponent
+---
+- launchApp
+- openLink: "exp://10.0.2.2:8081"
+
+# 1. Probar login con contraseña incorrecta
+- tapOn: "correo@uta.edu.ec"
+- inputText: "apuruncajas1832@uta.edu.ec"
+- tapOn: "Contraseña"
+- inputText: "ClaveIncorrecta999"
+- tapOn: "Iniciar Sesión"
+- assertVisible: "Error de Acceso"
+- tapOn: "OK"
+
+# 2. Probar login con dominio inválido
+- clearText
+- tapOn: "correo@uta.edu.ec"
+- clearText
+- inputText: "usuario@gmail.com"
+- tapOn: "Iniciar Sesión"
+- assertVisible: "Dominio Inválido"
+- tapOn: "OK"
+
+# 3. Recuperar estado: colocar credenciales correctas
+- clearText
+- inputText: "apuruncajas1832@uta.edu.ec"
+- tapOn: "Contraseña"
+- clearText
+- inputText: "Alan2005"
+- tapOn: "Iniciar Sesión"
+- assertVisible: "Viajes en tu zona"

@@ -1,0 +1,29 @@
+# ─────────────────────────────────────────────
+# Imagen base: Node.js 18 en Alpine (muy ligera ~50MB)
+# ─────────────────────────────────────────────
+FROM node:18-alpine
+
+# Instalar dependencias del sistema necesarias para bcrypt y pg
+RUN apk add --no-cache python3 make g++
+
+# Definir el directorio de trabajo dentro del contenedor
+WORKDIR /usr/src/app
+
+# Copiar SOLO los manifiestos de dependencias primero
+# (esto aprovecha el cache de Docker: si no cambian, no reinstala)
+COPY package*.json ./
+
+# Instalar dependencias de producción únicamente
+RUN npm ci --only=production
+
+# Copiar el resto del código fuente
+COPY . .
+
+# Exponer el puerto que usa el backend (definido en .env como PORT=5000)
+EXPOSE 5000
+
+# Variables de entorno por defecto (sobreescribibles al ejecutar el contenedor)
+ENV NODE_ENV=production
+
+# Comando de inicio (usa npm start que ejecuta node src/server.js)
+CMD ["npm", "start"]
