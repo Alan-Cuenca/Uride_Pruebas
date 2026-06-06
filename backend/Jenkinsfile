@@ -40,17 +40,23 @@ pipeline {
                 dir('backend') {
                     // Instalar todas las deps (incluyendo devDeps para los tests)
                     sh 'npm ci'
-                    // Ejecutar el conjunto completo de tests unitarios e integración
-                    sh 'npm test -- --passWithNoTests --forceExit'
+                    // Ejecutar tests con reporte de cobertura en formato lcov
+                    sh 'npm test -- --coverage --passWithNoTests --forceExit --coverageReporters=lcov --coverageReporters=text'
                 }
             }
             post {
+                success {
+                    echo '✅ Todos los tests pasaron correctamente.'
+                    // Publicar el reporte de cobertura en Jenkins
+                    recordCoverage(
+                        tools: [[parser: 'LCOV', pattern: 'backend/coverage/lcov.info']],
+                        id: 'coverage',
+                        name: 'U-Ride Backend Coverage'
+                    )
+                }
                 // Si los tests fallan, el pipeline se detiene aquí (no despliega)
                 failure {
                     echo '❌ Los tests fallaron. Se cancela el despliegue.'
-                }
-                success {
-                    echo '✅ Todos los tests pasaron correctamente.'
                 }
             }
         }
