@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<testsuites>
+  <testsuite name="Test Suite" device="error: could not connect to TCP port 5554: Connection refused" tests="9" failures="7" time="610.0">
+    <testcase id="01_register" name="01_register" classname="01_register" file=".maestro/01_register.yaml" time="96.0" status="SUCCESS"/>
+    <testcase id="02_forgot_password" name="02_forgot_password" classname="02_forgot_password" file=".maestro/02_forgot_password.yaml" time="73.0" status="SUCCESS"/>
+    <testcase id="03_login" name="03_login" classname="03_login" file=".maestro/03_login.yaml" time="69.0" status="ERROR">
+      <failure>Assertion is false: "Movilidad estudiantil segura" is visible</failure>
+    </testcase>
+    <testcase id="04_publish_ride" name="04_publish_ride" classname="04_publish_ride" file=".maestro/04_publish_ride.yaml" time="85.0" status="ERROR">
+      <failure>Unknown error</failure>
+    </testcase>
+    <testcase id="05_request_ride" name="05_request_ride" classname="05_request_ride" file=".maestro/05_request_ride.yaml" time="55.0" status="ERROR">
+      <failure>Assertion is false: "Viajes en tu zona" is visible</failure>
+    </testcase>
+    <testcase id="06_accept_request" name="06_accept_request" classname="06_accept_request" file=".maestro/06_accept_request.yaml" time="47.0" status="ERROR">
+      <failure>Assertion is false: "Tus Viajes Publicados" is visible</failure>
+    </testcase>
+    <testcase id="07_payment_offline" name="07_payment_offline" classname="07_payment_offline" file=".maestro/07_payment_offline.yaml" time="60.0" status="ERROR">
+      <failure>Element not found: Text matching regex: Iniciar Sesión</failure>
+    </testcase>
+    <testcase id="08_ride_execution" name="08_ride_execution" classname="08_ride_execution" file=".maestro/08_ride_execution.yaml" time="63.0" status="ERROR">
+      <failure>Assertion is false: ".*Viaje iniciado.*" is visible</failure>
+    </testcase>
+    <testcase id="09_rating_profile" name="09_rating_profile" classname="09_rating_profile" file=".maestro/09_rating_profile.yaml" time="62.0" status="ERROR">
+      <failure>Assertion is false: "Viajes en tu zona" is visible</failure>
+    </testcase>
+  </testsuite>
+</testsuites>

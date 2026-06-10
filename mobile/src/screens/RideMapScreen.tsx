@@ -4,7 +4,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from '../components/MapWrapper';
 import * as Location from 'expo-location';
 import api from '../services/api';
 import { COLORS, FONTS, RADIUS, SHADOW } from '../theme/design';

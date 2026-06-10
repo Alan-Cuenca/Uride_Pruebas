@@ -4,17 +4,19 @@ import { Ionicons } from '@expo/vector-icons';
 import api from '../services/api';
 import { COLORS, FONTS, RADIUS, SHADOW } from '../theme/design';
 
-const Field = ({ icon, placeholder, value, onChange, secure, keyboard }: any) => {
+const Field = ({ icon, placeholder, value, onChange, secure, keyboard, testID }: any) => {
   const [showPass, setShowPass] = useState(false);
   
   return (
     <View style={styles.inputWrapper}>
       <Ionicons name={icon} size={20} color={COLORS.primary} style={styles.inputIcon} />
       <TextInput
+        testID={testID}
         style={[styles.input, { flex: 1 }]}
         placeholder={placeholder}
         placeholderTextColor={COLORS.lightGray}
         autoCapitalize="none"
+        autoCorrect={false}
         secureTextEntry={secure && !showPass}
         keyboardType={keyboard || 'default'}
         value={value}
@@ -38,8 +40,8 @@ export default function ForgotPasswordScreen({ navigation }: any) {
   const [loading, setLoading] = useState(false);
 
   const handleRequestCode = async () => {
-    if (!email.trim().endsWith('@uta.edu.ec')) {
-      return Alert.alert('Dominio inválido', 'Ingresa tu correo institucional @uta.edu.ec');
+    if (!email.trim().endsWith('@uta.edu.ec') && !email.trim().endsWith('@test.uta.edu.ec')) {
+      return Alert.alert('Dominio inválido', 'Ingresa tu correo institucional @uta.edu.ec o @test.uta.edu.ec');
     }
 
     setLoading(true);
@@ -94,8 +96,15 @@ export default function ForgotPasswordScreen({ navigation }: any) {
               <Text style={styles.cardTitle}>¿Olvidaste tu contraseña?</Text>
               <Text style={styles.cardSub}>Ingresa tu correo institucional y te enviaremos un código para restablecerla.</Text>
 
-              <Field icon="mail-outline" placeholder="correo@uta.edu.ec" value={email} onChange={setEmail} keyboard="email-address" />
-
+              <Field 
+                testID="email_input"
+                icon="mail-outline" 
+                placeholder="correo@uta.edu.ec" 
+                keyboard="email-address" 
+                value={email} 
+                onChange={setEmail} 
+              />
+              
               <TouchableOpacity style={styles.btn} onPress={handleRequestCode} disabled={loading}>
                 {loading ? <ActivityIndicator color="#fff" /> : (
                   <View style={styles.btnInner}>
@@ -108,11 +117,32 @@ export default function ForgotPasswordScreen({ navigation }: any) {
           ) : (
             <>
               <Text style={styles.cardTitle}>Restablecer Contraseña</Text>
-              <Text style={styles.cardSub}>Ingresa el código enviado a {email}</Text>
+              <Text style={styles.cardSub}>Ingresa el código enviado a tu correo institucional y tu nueva contraseña.</Text>
 
-              <Field icon="key-outline" placeholder="Código de 6 dígitos" value={code} onChange={setCode} keyboard="number-pad" />
-              <Field icon="lock-closed-outline" placeholder="Nueva Contraseña" value={newPassword} onChange={setNewPassword} secure />
-              <Field icon="checkmark-circle-outline" placeholder="Confirmar Contraseña" value={confirmPassword} onChange={setConfirmPassword} secure />
+              <Field 
+                testID="code_input"
+                icon="key-outline" 
+                placeholder="Código de 6 dígitos" 
+                keyboard="numeric" 
+                value={code} 
+                onChange={setCode} 
+              />
+              <Field 
+                testID="new_password_input"
+                icon="lock-closed-outline" 
+                placeholder="Nueva Contraseña" 
+                secure 
+                value={newPassword} 
+                onChange={setNewPassword} 
+              />
+              <Field 
+                testID="confirm_new_password_input"
+                icon="checkmark-circle-outline" 
+                placeholder="Confirmar Contraseña" 
+                secure 
+                value={confirmPassword} 
+                onChange={setConfirmPassword} 
+              />
 
               <TouchableOpacity style={styles.btn} onPress={handleResetPassword} disabled={loading}>
                 {loading ? <ActivityIndicator color="#fff" /> : (
