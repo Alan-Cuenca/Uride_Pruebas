@@ -51,7 +51,7 @@ export default function RateScreen({ route, navigation }: any) {
           <Text style={styles.starLabel}>¿Cómo fue la experiencia?</Text>
           <View style={styles.starsRow}>
             {[1, 2, 3, 4, 5].map(star => (
-              <TouchableOpacity key={star} onPress={() => setCalificacion(star)} activeOpacity={0.75}>
+              <TouchableOpacity testID={`star_${star}`} key={star} onPress={() => setCalificacion(star)} activeOpacity={0.75}>
                 <Ionicons
                   name={calificacion >= star ? 'star' : 'star-outline'}
                   size={48}

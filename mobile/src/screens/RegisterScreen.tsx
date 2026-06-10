@@ -4,17 +4,19 @@ import { Ionicons } from '@expo/vector-icons';
 import api from '../services/api';
 import { COLORS, FONTS, RADIUS, SHADOW } from '../theme/design';
 
-const Field = ({ icon, placeholder, value, onChange, secure, keyboard }: any) => {
+const Field = ({ icon, placeholder, value, onChange, secure, keyboard, testID }: any) => {
   const [showPass, setShowPass] = useState(false);
   
   return (
     <View style={styles.inputWrapper}>
       <Ionicons name={icon} size={20} color={COLORS.primary} style={styles.inputIcon} />
       <TextInput
+        testID={testID}
         style={[styles.input, { flex: 1 }]}
         placeholder={placeholder}
         placeholderTextColor={COLORS.lightGray}
         autoCapitalize="none"
+        autoCorrect={false}
         secureTextEntry={secure && !showPass}
         keyboardType={keyboard || 'default'}
         value={value}
@@ -41,8 +43,8 @@ export default function RegisterScreen({ navigation }: any) {
   const handleRegister = async () => {
     if (!nombre.trim() || !email.trim() || !password || !confirmar)
       return Alert.alert('Campos vacíos', 'Completa todos los campos.');
-    if (!email.trim().endsWith('@uta.edu.ec'))
-      return Alert.alert('Dominio inválido', 'Usa tu correo @uta.edu.ec');
+    if (!email.trim().endsWith('@uta.edu.ec') && !email.trim().endsWith('@test.uta.edu.ec'))
+      return Alert.alert('Dominio inválido', 'Usa tu correo @uta.edu.ec o @test.uta.edu.ec');
     if (password !== confirmar)
       return Alert.alert('Contraseñas distintas', 'Las contraseñas no coinciden.');
     if (password.length < 6)
@@ -93,10 +95,37 @@ export default function RegisterScreen({ navigation }: any) {
               <Text style={styles.cardTitle}>Crea tu cuenta</Text>
               <Text style={styles.cardSub}>Solo para estudiantes verificados UTA</Text>
 
-              <Field icon="person-outline" placeholder="Nombre completo" value={nombre} onChange={setNombre} />
-              <Field icon="mail-outline" placeholder="correo@uta.edu.ec" value={email} onChange={setEmail} keyboard="email-address" />
-              <Field icon="lock-closed-outline" placeholder="Contraseña" value={password} onChange={setPassword} secure />
-              <Field icon="checkmark-circle-outline" placeholder="Confirmar Contraseña" value={confirmar} onChange={setConfirmar} secure />
+              <Field 
+                testID="nombre_input"
+                icon="person-outline" 
+                placeholder="Nombre completo" 
+                value={nombre} 
+                onChange={setNombre} 
+              />
+              <Field 
+                testID="email_input"
+                icon="mail-outline" 
+                placeholder="correo@uta.edu.ec" 
+                keyboard="email-address" 
+                value={email} 
+                onChange={setEmail} 
+              />
+              <Field 
+                testID="password_input"
+                icon="lock-closed-outline" 
+                placeholder="Contraseña" 
+                secure 
+                value={password} 
+                onChange={setPassword} 
+              />
+              <Field 
+                testID="confirm_password_input"
+                icon="checkmark-circle-outline" 
+                placeholder="Confirmar Contraseña" 
+                secure 
+                value={confirmar} 
+                onChange={setConfirmar} 
+              />
 
               <TouchableOpacity style={styles.btn} onPress={handleRegister} disabled={loading}>
                 {loading ? <ActivityIndicator color="#fff" /> : (

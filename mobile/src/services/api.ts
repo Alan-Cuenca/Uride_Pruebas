@@ -1,10 +1,13 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+import { Platform } from 'react-native';
+
 // IP WiFi de la PC donde corre el backend Node.js.
 // Android físico no puede usar 'localhost' — debe usar la IP de la red local.
+// En Web (Cypress) sí podemos y debemos usar localhost.
 const api = axios.create({
-  baseURL: 'http://10.0.2.2:5000/api',
+  baseURL: Platform.OS === 'web' ? 'http://localhost:5000/api' : 'http://10.0.2.2:5000/api',
   timeout: 10000,
 });
 

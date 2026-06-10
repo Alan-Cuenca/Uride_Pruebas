@@ -6,7 +6,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
-import MapView, { Marker, PROVIDER_GOOGLE } from 'react-native-maps';
+import MapView, { Marker, PROVIDER_GOOGLE } from '../components/MapWrapper';
 import * as Location from 'expo-location';
 import DateTimePickerCustom from '../components/DateTimePickerCustom';
 import api from '../services/api';
@@ -23,7 +23,7 @@ export default function PublishRideScreen({ navigation, route }: any) {
   const [origen, setOrigen]         = useState<Coordenada>(null);
   const [destino, setDestino]       = useState<Coordenada>(null);
   const [modo, setModo]             = useState<'origen' | 'destino'>('origen');
-  const [fechaDate, setFechaDate]   = useState(new Date());
+  const [fechaDate, setFechaDate]   = useState(viajeEdit ? new Date(viajeEdit.fecha_salida) : new Date(Date.now() + 1000 * 60 * 60));
   const [cupos, setCupos]           = useState('');
   const [reglas, setReglas]         = useState('');
   const [costo, setCosto]           = useState('0');
@@ -57,16 +57,22 @@ export default function PublishRideScreen({ navigation, route }: any) {
     }
 
     (async () => {
-      const { status } = await Location.requestForegroundPermissionsAsync();
-      if (status !== 'granted') {
+      if (Platform.OS === 'web') {
+        setRegion({ latitude: -1.2543, longitude: -78.6229, latitudeDelta: 0.015, longitudeDelta: 0.015 });
+        setOrigen({ latitud: -1.2543, longitud: -78.6229 });
+        setLoadingGPS(false);
+        return;
+      }
+      
+      const res = await Location.requestForegroundPermissionsAsync();
+      if (res.status !== 'granted') {
         Alert.alert('Permiso Denegado', 'Se necesita ubicación para marcar el origen.');
         setLoadingGPS(false);
         return;
       }
       const loc = await Location.getCurrentPositionAsync({ accuracy: Location.Accuracy.High });
-      const { latitude, longitude } = loc.coords;
-      setRegion({ latitude, longitude, latitudeDelta: 0.015, longitudeDelta: 0.015 });
-      setOrigen({ latitud: latitude, longitud: longitude });
+      setRegion({ latitude: loc.coords.latitude, longitude: loc.coords.longitude, latitudeDelta: 0.015, longitudeDelta: 0.015 });
+      setOrigen({ latitud: loc.coords.latitude, longitud: loc.coords.longitude });
       setLoadingGPS(false);
     })();
   }, [isEditMode, viajeEdit]);
@@ -78,8 +84,9 @@ export default function PublishRideScreen({ navigation, route }: any) {
   };
 
   const handlePublish = async () => {
-    if (!origen || !destino) return Alert.alert('Mapa incompleto', 'Marca Origen y Destino en el mapa.');
-    if (!cupos || !reglas.trim()) return Alert.alert('Campos requeridos', 'Cupos y reglas son obligatorios.');
+    if (!origen || !destino) return Alert.alert('Error', 'Faltan coordenadas de origen o destino.');
+    if (!cupos || parseInt(cupos) < 1) return Alert.alert('Error', 'Debe haber al menos 1 cupo.');
+    if (!reglas.trim()) return Alert.alert('Error', 'Las reglas del viaje son obligatorias.');
     if (parseInt(cupos) <= 0) return Alert.alert('Cupos inválidos', 'Mínimo 1 cupo disponible.');
     if (fechaDate.getTime() < Date.now() - 60000) return Alert.alert('Fecha inválida', 'La fecha y hora de salida no puede estar en el pasado.');
 
@@ -129,6 +136,7 @@ export default function PublishRideScreen({ navigation, route }: any) {
         {/* Selector de Modo */}
         <View style={styles.modeRow}>
           <TouchableOpacity
+            testID="btn_origen"
             style={[styles.modeBtn, modo === 'origen' && { borderColor: COLORS.secondary, backgroundColor: '#ECFDF5' }]}
             onPress={() => setModo('origen')}
           >
@@ -138,6 +146,7 @@ export default function PublishRideScreen({ navigation, route }: any) {
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
+            testID="btn_destino"
             style={[styles.modeBtn, modo === 'destino' && { borderColor: COLORS.danger, backgroundColor: '#FEF2F2' }]}
             onPress={() => setModo('destino')}
           >
@@ -243,7 +252,12 @@ export default function PublishRideScreen({ navigation, route }: any) {
         </View>
 
         {/* Botón Publicar */}
-        <TouchableOpacity style={styles.publishBtn} onPress={handlePublish} disabled={loading}>
+        <TouchableOpacity 
+          testID="submit_publish"
+          style={styles.publishBtn} 
+          onPress={handlePublish} 
+          disabled={loading}
+        >
           {loading ? <ActivityIndicator color="#fff" /> : (
             <View style={styles.btnInner}>
               <Ionicons name="cloud-upload-outline" size={20} color="#fff" />

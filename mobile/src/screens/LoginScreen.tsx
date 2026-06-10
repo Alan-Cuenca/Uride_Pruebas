@@ -13,8 +13,8 @@ export default function LoginScreen({ navigation }: any) {
   const loginAction = useAuthStore(state => state.login);
 
   const handleLogin = async () => {
-    if (!email.trim().endsWith('@uta.edu.ec')) {
-      Alert.alert('Dominio Inválido', 'Debes usar tu cuenta @uta.edu.ec');
+    if (!email.trim().endsWith('@uta.edu.ec') && !email.trim().endsWith('@test.uta.edu.ec')) {
+      Alert.alert('Dominio Inválido', 'Debes usar tu cuenta @uta.edu.ec o @test.uta.edu.ec');
       return;
     }
     setLoading(true);
@@ -50,11 +50,13 @@ export default function LoginScreen({ navigation }: any) {
           <View style={styles.inputWrapper}>
             <Ionicons name="mail-outline" size={20} color={COLORS.primary} style={styles.inputIcon} />
             <TextInput
+              testID="email_input"
               style={styles.input}
               placeholder="correo@uta.edu.ec"
               placeholderTextColor={COLORS.lightGray}
               keyboardType="email-address"
               autoCapitalize="none"
+              autoCorrect={false}
               onChangeText={setEmail}
               value={email}
             />
@@ -63,6 +65,7 @@ export default function LoginScreen({ navigation }: any) {
           <View style={styles.inputWrapper}>
             <Ionicons name="lock-closed-outline" size={20} color={COLORS.primary} style={styles.inputIcon} />
             <TextInput
+              testID="password_input"
               style={[styles.input, { flex: 1 }]}
               placeholder="Contraseña"
               placeholderTextColor={COLORS.lightGray}
@@ -84,12 +87,12 @@ export default function LoginScreen({ navigation }: any) {
             )}
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.link} onPress={() => navigation.navigate('ForgotPassword')}>
+          <TouchableOpacity testID="forgot_password_btn" style={styles.link} onPress={() => navigation.navigate('ForgotPassword')}>
             <Text style={styles.linkText}>¿Olvidaste tu contraseña?</Text>
           </TouchableOpacity>
 
-          <TouchableOpacity style={[styles.link, { marginTop: 10 }]} onPress={() => navigation.navigate('Register')}>
-            <Text style={styles.linkText}>¿Sin cuenta? <Text style={styles.linkBold}>Regístrate →</Text></Text>
+          <TouchableOpacity testID="register_btn" style={[styles.link, { marginTop: 10 }]} onPress={() => navigation.navigate('Register')}>
+            <Text style={styles.linkText}>¿Sin cuenta? <Text style={styles.linkBold}>Regístrate</Text></Text>
           </TouchableOpacity>
         </View>
       </View>

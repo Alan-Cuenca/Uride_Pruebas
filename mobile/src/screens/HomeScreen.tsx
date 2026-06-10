@@ -56,6 +56,14 @@ export default function HomeScreen({ navigation }: any) {
       
       if (resp.data.requiereConfirmacionPago) {
         const nombres = resp.data.pasajerosSinPago.join('\n- ');
+        
+        if (Platform.OS === 'web') {
+          if (window.confirm(`Los siguientes pasajeros aún no han realizado su aporte:\n\n- ${nombres}\n\n¿Deseas iniciar el viaje de todas formas?`)) {
+            handleStartRide(true);
+          }
+          return;
+        }
+
         Alert.alert(
           'Pasajeros sin pago ⚠️',
           `Los siguientes pasajeros aún no han realizado su aporte:\n\n- ${nombres}\n\n¿Deseas iniciar el viaje de todas formas?`,
@@ -93,6 +101,20 @@ export default function HomeScreen({ navigation }: any) {
 
   const handleDeleteRide = () => {
     if (!selectedViaje) return;
+    
+    if (Platform.OS === 'web') {
+      if (window.confirm('Eliminar viaje\nEsta acción eliminará el viaje y las solicitudes asociadas.')) {
+        api.delete(`/viajes/${selectedViaje.id}`).then(() => {
+          Alert.alert('Viaje eliminado', 'La publicación fue borrada correctamente.');
+          setModalVisible(false);
+          fetchRides();
+        }).catch((err: any) => {
+          Alert.alert('Error', err.response?.data?.error || 'No se pudo eliminar el viaje.');
+        });
+      }
+      return;
+    }
+
     Alert.alert(
       'Eliminar viaje',
       'Esta acción eliminará el viaje y las solicitudes asociadas.',
@@ -121,6 +143,7 @@ export default function HomeScreen({ navigation }: any) {
       await api.post('/solicitudes', { viaje_id: selectedViaje.id });
       Alert.alert('🎉 Solicitud Enviada', 'El conductor revisará tu solicitud pronto.');
       setModalVisible(false);
+      fetchRides();
     } catch (err: any) {
       Alert.alert('Error', err.response?.data?.error || 'No se pudo enviar.');
     }

@@ -17,7 +17,7 @@ exports.register = async (req, res) => {
     }
 
     // 2. Validación de Dominio (REGLA ACADÉMICA UTA)
-    if (!email.trim().endsWith('@uta.edu.ec')) {
+    if (!email.trim().endsWith('@uta.edu.ec') && !email.trim().endsWith('@test.uta.edu.ec')) {
       return res.status(403).json({ 
         error: 'Pertenencia Institucional Inválida. El correo debe terminar en @uta.edu.ec' 
       });
@@ -32,7 +32,13 @@ exports.register = async (req, res) => {
     }
 
     // 4. Generar código de verificación (6 dígitos)
-    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    let verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const isTestAccount = email.trim().endsWith('@test.uta.edu.ec');
+
+    // MOCK PARA MAESTRO E2E
+    if (isTestAccount) {
+      verificationCode = '123456';
+    }
 
     // 5. Cifrado de Contraseña
     const salt = await bcrypt.genSalt(10);
@@ -48,7 +54,9 @@ exports.register = async (req, res) => {
     await pool.query(insertPendienteSQL, [email.trim(), verificationCode, JSON.stringify(datosUsuario)]);
 
     // 7. Enviar Correo
-    await emailService.sendVerificationCode(email.trim(), verificationCode, nombre.trim());
+    if (!isTestAccount) {
+      await emailService.sendVerificationCode(email.trim(), verificationCode, nombre.trim());
+    }
 
     // 8. Retorno Exitoso de Petición
     return res.status(200).json({
@@ -202,7 +210,13 @@ exports.forgotPassword = async (req, res) => {
     const usuario = result.rows[0];
 
     // 2. Generar código de verificación
-    const recoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
+    let recoveryCode = Math.floor(100000 + Math.random() * 900000).toString();
+    const isTestAccount = email.trim().endsWith('@test.uta.edu.ec');
+
+    // MOCK PARA MAESTRO E2E
+    if (isTestAccount) {
+      recoveryCode = '123456';
+    }
 
     // 3. Guardar en recuperaciones_contrasena
     const insertSQL = `
@@ -213,7 +227,9 @@ exports.forgotPassword = async (req, res) => {
     await pool.query(insertSQL, [email.trim(), recoveryCode]);
 
     // 4. Enviar correo
-    await emailService.sendPasswordRecoveryCode(email.trim(), recoveryCode, usuario.nombre);
+    if (!isTestAccount) {
+      await emailService.sendPasswordRecoveryCode(email.trim(), recoveryCode, usuario.nombre);
+    }
 
     return res.status(200).json({ message: 'Código de recuperación enviado al correo' });
 
